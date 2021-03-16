@@ -1,4 +1,6 @@
-import { Manager } from './src/models/Manager.ts';
+import { Prompt } from './src/handlers/Prompt.ts';
 
-// initialize the manager
-const manager = new Manager('main');
+function main() {
+  new Prompt();
+}
+main();

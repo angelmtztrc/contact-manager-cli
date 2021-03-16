@@ -4,7 +4,7 @@ import { Contact } from '../interfaces/Contact.ts';
 export class Manager {
   private data: Contact[] = [];
 
-  constructor(public filename: string) {
+  constructor() {
     this.start();
   }
 
@@ -30,5 +30,9 @@ export class Manager {
     } else {
       this.data = await JSON.parse(fileContent);
     }
+  }
+
+  get(): Contact[] {
+    return this.data;
   }
 }
