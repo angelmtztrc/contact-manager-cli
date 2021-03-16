@@ -3,8 +3,10 @@ import { Contact } from '../interfaces/Contact.ts';
 
 export class Manager {
   private data: Contact[] = [];
-  private path: string = './directory.json';
+  private pathname: string;
+
   constructor() {
+    this.pathname = './directory.json';
     this.start();
   }
 
@@ -13,15 +15,15 @@ export class Manager {
    */
   start(): void {
     // Find/create a json file to store our contacts
-    ensureFileSync(this.path);
-    this.read(this.path);
+    ensureFileSync(this.pathname);
+    this.read();
   }
 
   /**
    * Read the data of the json file
    */
-  async read(path: string): Promise<void> {
-    const fileContent = await Deno.readTextFile(path);
+  async read(): Promise<void> {
+    const fileContent = await Deno.readTextFile(this.pathname);
 
     if (fileContent === '') {
       this.data = [];
@@ -30,8 +32,11 @@ export class Manager {
     }
   }
 
-  async write(): Promise<void> {
-    Deno.writeTextFile(this.path, JSON.stringify(this.data));
+  /**
+   * Write new changes in the json file
+   */
+  write(): void {
+    Deno.writeTextFile(this.pathname, JSON.stringify(this.data));
   }
 
   /**
@@ -40,6 +45,21 @@ export class Manager {
    */
   get(): Contact[] {
     return this.data;
+  }
+
+  /**
+   * Function for find a specify contact
+   * @param name string
+   * @returns Contact
+   */
+  findOne(name: string): Contact | string {
+    const contact = this.data.find((item: Contact) => item.name === name);
+
+    if (contact) {
+      return contact;
+    } else {
+      return 'Contact not found';
+    }
   }
 
   /**

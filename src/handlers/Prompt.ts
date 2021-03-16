@@ -52,8 +52,12 @@ export class Prompt {
       case 'GET_ALL':
         this.getAll();
         break;
+      case 'FIND_ONE':
+        this.findOne();
+        break;
       case 'CREATE':
         this.createAContact();
+        break;
       default:
         break;
     }
@@ -75,6 +79,44 @@ export class Prompt {
       .indent(2)
       .border(true)
       .render();
+
+    // print an space
+    this.printSpace();
+
+    // initialize again
+    this.initialize();
+  }
+
+  async findOne(): Promise<void> {
+    const suggestions: string[] = [];
+
+    // create a array for suggestions
+    this.manager.get().forEach((contact: Contact) => {
+      suggestions.push(Object.values(contact)[1]);
+    });
+
+    // prompt the user for find a contact
+    const requestedContact = await Input.prompt({
+      message: 'Write a contact name',
+      suggestions: suggestions
+    });
+
+    // find the contact in the json file
+    const contact = this.manager.findOne(requestedContact);
+
+    if (typeof contact === 'string') {
+      // print a message if the contact is not found
+      console.info(contact);
+    } else {
+      // print the data of the contact
+      new Table()
+        .header(['ID', 'Name', 'Email', 'Cellphone'])
+        .body([Object.values(contact)])
+        .padding(1)
+        .indent(2)
+        .border(true)
+        .render();
+    }
 
     // print an space
     this.printSpace();
