@@ -3,7 +3,7 @@ import { Contact } from '../interfaces/Contact.ts';
 
 export class Manager {
   private data: Contact[] = [];
-
+  private path: string = './directory.json';
   constructor() {
     this.start();
   }
@@ -12,11 +12,9 @@ export class Manager {
    * Start the manager by finding/creating a json file
    */
   start(): void {
-    const path = './directory.json';
-
     // Find/create a json file to store our contacts
-    ensureFileSync(path);
-    this.read(path);
+    ensureFileSync(this.path);
+    this.read(this.path);
   }
 
   /**
@@ -32,7 +30,30 @@ export class Manager {
     }
   }
 
+  async write(): Promise<void> {
+    Deno.writeTextFile(this.path, JSON.stringify(this.data));
+  }
+
+  /**
+   * function for get all of the contacts
+   * @returns Contact[]
+   */
   get(): Contact[] {
     return this.data;
+  }
+
+  /**
+   * Function for create a new contact
+   * @param contact Contact
+   * @returns string
+   */
+  create(contact: Contact): string {
+    // update the data
+    this.data.push(contact);
+
+    // write in the file
+    this.write();
+
+    return 'Contact created successfully';
   }
 }

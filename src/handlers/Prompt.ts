@@ -1,5 +1,8 @@
+import { nanoid } from 'https://deno.land/x/nanoid/async.ts';
 import { Select } from 'https://deno.land/x/cliffy/prompt/select.ts';
 import { Table } from 'https://deno.land/x/cliffy/table/mod.ts';
+import { Input } from 'https://deno.land/x/cliffy/prompt/input.ts';
+
 import { Manager } from '../handlers/Manager.ts';
 import { Contact } from '../interfaces/Contact.ts';
 
@@ -49,7 +52,8 @@ export class Prompt {
       case 'GET_ALL':
         this.getAll();
         break;
-
+      case 'CREATE':
+        this.createAContact();
       default:
         break;
     }
@@ -77,6 +81,29 @@ export class Prompt {
 
     // initialize again
     this.initialize();
+  }
+
+  async createAContact(): Promise<void> {
+    // get the name of the contact
+    const name = await Input.prompt("What's the name of the new contact?");
+
+    // get the email of the contact
+    const email = await Input.prompt("What's the email of the new contact?");
+
+    // get the cellphone of the contact
+    const cellphone = await Input.prompt("What's the cellphone of the new contact?");
+
+    // create the contact
+    console.info(this.manager.create({ id: await nanoid(8), name, email, cellphone }));
+
+    this.printSpace();
+
+    // re initialize
+    this.initialize();
+  }
+
+  exit(): void {
+    Deno.exit();
   }
 
   printSpace(): void {
