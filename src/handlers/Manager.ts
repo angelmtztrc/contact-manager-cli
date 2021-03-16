@@ -76,4 +76,21 @@ export class Manager {
 
     return 'Contact created successfully';
   }
+
+  remove(id: string): string {
+    // find the contact
+    const exists = this.data.find((item: Contact) => item.id === id);
+
+    if (exists) {
+      // remove the contact
+      this.data = [...this.data.filter((contact: Contact) => contact.id !== id)];
+
+      // update the json file
+      this.write();
+
+      return 'Contact removed successfully';
+    } else {
+      return 'Contact not found';
+    }
+  }
 }

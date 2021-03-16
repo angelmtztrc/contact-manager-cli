@@ -14,6 +14,9 @@ export class Prompt {
     this.initialize();
   }
 
+  /**
+   * Initialize the prompt
+   */
   async initialize(): Promise<void> {
     const option: string = await Select.prompt({
       message: 'What would you like to do?',
@@ -47,6 +50,10 @@ export class Prompt {
     this.choosedOperation(option);
   }
 
+  /**
+   * Launch a question
+   * @param option string
+   */
   choosedOperation(option: string): void {
     switch (option) {
       case 'GET_ALL':
@@ -58,11 +65,17 @@ export class Prompt {
       case 'CREATE':
         this.createAContact();
         break;
+      case 'DELETE':
+        this.deleteOne();
+        break;
       default:
         break;
     }
   }
 
+  /**
+   * Function to get all contacts
+   */
   getAll(): void {
     const rows: string[][] = [];
 
@@ -87,6 +100,9 @@ export class Prompt {
     this.initialize();
   }
 
+  /**
+   * Function for find a contact - this prompt a question
+   */
   async findOne(): Promise<void> {
     const suggestions: string[] = [];
 
@@ -125,6 +141,9 @@ export class Prompt {
     this.initialize();
   }
 
+  /**
+   * Function for propmt questions for create a new contact
+   */
   async createAContact(): Promise<void> {
     // get the name of the contact
     const name = await Input.prompt("What's the name of the new contact?");
@@ -144,10 +163,30 @@ export class Prompt {
     this.initialize();
   }
 
+  async deleteOne(): Promise<void> {
+    const id = await Input.prompt("What's the ID of the contact that you try to remove?");
+
+    // delete the contact
+    const response = this.manager.remove(id);
+    console.info(response);
+
+    // print an space
+    this.printSpace();
+
+    // re initialize
+    this.initialize();
+  }
+
+  /**
+   * Function to exit the program
+   */
   exit(): void {
     Deno.exit();
   }
 
+  /**
+   * Print an blank space
+   */
   printSpace(): void {
     console.log('\n');
   }
