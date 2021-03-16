@@ -1,6 +1,11 @@
 import { ensureFileSync } from 'https://deno.land/std@0.90.0/fs/mod.ts';
 import { Contact } from '../interfaces/Contact.ts';
 
+export type FindOneProps = {
+  prop: 'id' | 'name';
+  value: string;
+};
+
 export class Manager {
   private data: Contact[] = [];
   private pathname: string;
@@ -40,7 +45,7 @@ export class Manager {
   }
 
   /**
-   * function for get all of the contacts
+   * function to get all of the contacts
    * @returns Contact[]
    */
   get(): Contact[] {
@@ -48,12 +53,12 @@ export class Manager {
   }
 
   /**
-   * Function for find a specify contact
+   * Function to find a specify contact
    * @param name string
    * @returns Contact
    */
-  findOne(name: string): Contact | string {
-    const contact = this.data.find((item: Contact) => item.name === name);
+  findOne({ prop, value }: FindOneProps): Contact | string {
+    const contact = this.data.find((item: Contact) => item[prop] === value);
 
     if (contact) {
       return contact;
@@ -63,7 +68,7 @@ export class Manager {
   }
 
   /**
-   * Function for create a new contact
+   * Function to create a new contact
    * @param contact Contact
    * @returns string
    */
@@ -77,11 +82,42 @@ export class Manager {
     return 'Contact created successfully';
   }
 
+  /**
+   * Function to update a contact
+   * @param contact Contact information
+   * @returns string
+   */
+  update(contact: Contact): string {
+    // update the data
+    this.data = [
+      ...this.data.map(
+        (item: Contact): Contact => {
+          if (item.id === contact.id) {
+            item = contact;
+            return item;
+          } else {
+            return item;
+          }
+        }
+      )
+    ];
+
+    // update the json file
+    this.write();
+
+    return 'Contact updated successfully';
+  }
+
+  /**
+   * Function to remove a contact
+   * @param id id of the contact
+   * @returns string
+   */
   remove(id: string): string {
     // find the contact
-    const exists = this.data.find((item: Contact) => item.id === id);
+    const exists = this.findOne({ prop: 'id', value: id });
 
-    if (exists) {
+    if (typeof exists !== 'string') {
       // remove the contact
       this.data = [...this.data.filter((contact: Contact) => contact.id !== id)];
 

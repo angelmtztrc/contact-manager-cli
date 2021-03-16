@@ -65,6 +65,9 @@ export class Prompt {
       case 'CREATE':
         this.createAContact();
         break;
+      case 'UPDATE':
+        this.updateAContact();
+        break;
       case 'DELETE':
         this.deleteOne();
         break;
@@ -112,13 +115,13 @@ export class Prompt {
     });
 
     // prompt the user for find a contact
-    const requestedContact = await Input.prompt({
+    const name = await Input.prompt({
       message: 'Write a contact name',
       suggestions: suggestions
     });
 
     // find the contact in the json file
-    const contact = this.manager.findOne(requestedContact);
+    const contact = this.manager.findOne({ prop: 'name', value: name });
 
     if (typeof contact === 'string') {
       // print a message if the contact is not found
@@ -163,6 +166,39 @@ export class Prompt {
     this.initialize();
   }
 
+  /**
+   * Prompt the user for update a contact
+   */
+  async updateAContact(): Promise<void> {
+    const id = await Input.prompt("What's the ID of the contact that you try to update?");
+
+    if (typeof this.manager.findOne({ prop: 'id', value: id }) !== 'string') {
+      // get the name of the contact
+      const name = await Input.prompt("What's the new name of the contact?");
+
+      // get the email of the contact
+      const email = await Input.prompt("What's the new email of the contact?");
+
+      // get the cellphone of the contact
+      const cellphone = await Input.prompt("What's the cellphone of the contact?");
+
+      // update the contact
+      const response = this.manager.update({ id, name, email, cellphone });
+      console.info(response);
+    } else {
+      console.info('Contact not found');
+    }
+
+    // print an space
+    this.printSpace();
+
+    // re initialize
+    this.initialize();
+  }
+
+  /**
+   * Prompt the user for delete a contact
+   */
   async deleteOne(): Promise<void> {
     const id = await Input.prompt("What's the ID of the contact that you try to remove?");
 
